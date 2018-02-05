@@ -1,22 +1,58 @@
+import laspy
 import numpy as np
 
 
-def generate_plane_segment(p, l, n, d):
+def generate_las(xyz, outfile):
+    """Write a numpy array of 3d row vectors to a new .las file.
+
+    Args:
+        xyz (np.array): 3d row vectors
+        outfile (str): path to output file. Existing files will be overwritten.
+    """
+    hdr = laspy.header.Header()
+    outfile = laspy.file.File(outfile, mode="w", header=hdr)
+
+    # populate the header with minimal info
+    xmin = np.floor(np.min(xyz[:, 0]))
+    ymin = np.floor(np.min(xyz[:, 1]))
+    zmin = np.floor(np.min(xyz[:, 2]))
+    outfile.header.offset = [xmin, ymin, zmin]
+    outfile.header.scale = [0.001, 0.001, 0.001]
+
+    # output points
+    outfile.x = xyz[:, 0]
+    outfile.y = xyz[:, 1]
+    outfile.z = xyz[:, 2]
+
+    outfile.close()
+
+
+def generate_plane_segment(p, n, l, m):
     """Generate a cloud of random points in a square plane segment.
 
     Args:
         p (np.array): a 3-tuple of floats giving the center of the plane segment.
-        l (float): length of the sides of the square.
         n (np.array): a 3-tuple giving the normal of the plane.
+        l (float): length of the sides of the square.
         m (float): number of points in the plane
 
     Returns:
         np.array: mx3 list of points
     """
-    pass
+    # Generate an lxl segment of the x-y plane.
+    # Let a(x-x_0) + b(y-y_0) + c(z-z_0) = 0
+    # x_0=0, y_0=0, c=0 => ax + by = 0
+    xyz = np.random.rand(m, 3) * l
+    xyz[:, 2] = np.zeros(m)
+    return xyz
 
 
 def test_generate_plane_segment():
-    seg = generate_plane_segment((0., 0., 0.), 1.0, (0., 0., 1.), 100)
-    assert seg
+    l = 1.0
+    m = 100
+    seg = generate_plane_segment((0., 0., 0.), (0., 0., 1.), l, m)
+    assert seg.shape == (m, 3)
+
+    # dump the points to a .las so we can view them
+    generate_las(seg, '/home/rick/src/pcf/scripts/output.las')
 
