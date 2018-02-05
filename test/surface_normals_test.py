@@ -61,11 +61,11 @@ def generate_plane_segment(p, n, l, m):
 
 
 def test_generate_plane_segment():
-    origin = np.array([0., 0., 0.])
-    n = np.array([1., 0., 1.])  # x-axis
+    o = np.array([0., 0., 0.])
+    n = np.array([1., 0., 0.])  # x-axis
     l = 1.0
     m = 10000
-    seg = generate_plane_segment(origin, n, l, m)
+    seg = generate_plane_segment(o, n, l, m)
     assert seg.shape == (3, m)
 
     # dump the points to a .las so we can view them
