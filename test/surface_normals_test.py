@@ -60,7 +60,7 @@ def generate_plane_segment(p, n, l, m):
     return xyz_transformed[:3, :]
 
 
-def test_generate_plane_segment():
+def test_generate_plane_segment(test_artifact_dir):
     o = np.array([0., 0., 0.])
     n = np.array([1., 0., 0.])  # x-axis
     l = 1.0
@@ -69,5 +69,8 @@ def test_generate_plane_segment():
     assert seg.shape == (3, m)
 
     # dump the points to a .las so we can view them
-    generate_las(seg.T, '/home/rick/src/pcf/scripts/output.las')
+    generate_las(seg.T, str(test_artifact_dir.join('plane_segment.las')))
+
+
+
 
